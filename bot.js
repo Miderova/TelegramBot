@@ -1,8 +1,12 @@
 require('dotenv').config();
 
-const { TelegramBot } = require('node-telegram-bot-api'); 
+// Импортируем модуль напрямую
+const TelegramBotModule = require('node-telegram-bot-api'); 
 
 const token = process.env.BOT_TOKEN;
+
+// Умная проверка: если модуль импортировался как объект, берем из него класс, иначе используем сам модуль
+const TelegramBot = TelegramBotModule.TelegramBot || TelegramBotModule;
 const bot = new TelegramBot(token, { polling: true }); 
 
 console.log('Погнали! Бот ожил 🚀');
@@ -61,7 +65,6 @@ bot.on('message', (msg) => {
         bot.sendMessage(chatId, `Твое задание:\n\n⚠️ *${randomAction}*`, { parse_mode: 'Markdown' });
 
     } else if (text.includes("мемчанский")) {
-        // Шанс 70% на картинку и 30% на текстовый текстовый арт/анекдот
         if (Math.random() > 0.3) {
             const memes = [
                 'https://i.pinimg.com/736x/77/19/00/77190088c8605dde08fdd0b3ab1a5441.jpg',
@@ -81,10 +84,9 @@ bot.on('message', (msg) => {
             bot.sendPhoto(chatId, randomMeme, { caption: "Лови мем экспертного уровня! 🔥" })
                 .catch((err) => {
                     console.error('Ошибка отправки:', err.message);
-                    bot.sendMessage(chatId, "⚠️ Картинка где-то застряла в интернетах, попробуй еще раз!");
+                    bot.sendMessage(chatId, "⚠️ Картинка застряла по пути, попробуй еще раз!");
                 });
         } else {
-            // Те самые текстовые анекдоты из символов
             const darkArts = [
                 "```\n   _____\n  |     |\n  |     O\n  |    /|\\\n  |    / \\\n  |\n _|_ \n```\n*Колобок повесился. А нет, это не Колобок...*",
                 "```\n   ▲\n  ◤ ◥  🔥\n (  🚌  )\n```\n*Загадка: летит, горит и матерится?*\n*Ответ: Школьный автобус, летящий со скалы.*",
